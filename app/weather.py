@@ -32,7 +32,7 @@ weather_codes_list = load_weather_codes(WEATHER_CODES_FILE_PATH)
 def get_weather_description(weather_code):
     return weather_codes_list.get(str(weather_code), "Unknown")
 
-def get_temperature_forecast(city, latitude, longitude, timezone):
+def get_temperature_forecast(city, latitude, longitude, timezone, days):
     """
     Fetches temperature forecast data from an API for the specified city.
     
@@ -41,14 +41,17 @@ def get_temperature_forecast(city, latitude, longitude, timezone):
         latitude (float): Latitude of the location.
         longitude (float): Longitude of the location.
         timezone (string): STD code of timezone.
+        days (int): Number of days consulted.
     
     Returns:
-        dict: Forecast data for the next 3 days.
+        dict: Forecast data for the requested days.
     """
     try:
         # Fetch weather data from API
         if not WEATHER_API_URL:
             raise ValueError("WEATHER_API_URL environment variable is not set")
+        if days > 7:
+            raise IndexError("Days cannot be greater than 7.")
 
         url = f"{WEATHER_API_URL}?latitude={latitude}&longitude={longitude}&timezone={timezone}&{TEMPERATURE_PARAMS}"
         
@@ -59,41 +62,37 @@ def get_temperature_forecast(city, latitude, longitude, timezone):
         
         # The json returns data for the next 7 days. We want the data of 3 days from now.
         weather = data["daily"]
-        # Parse weather data
-        # forecast = {
-        #     "city": city,
-        #     "date": weather["time"][3],
-        #     "timezone": timezone,
-        #     "description": get_weather_description(weather["weather_code"][3]),
-        #     "max_temperature": weather["temperature_2m_max"][3],
-        #     "min_temperature": weather["temperature_2m_min"][3],
-        #     "apparent_max_temperature": weather["apparent_temperature_max"][3],
-        #     "apparent_min_temperature": weather["apparent_temperature_min"][3],
-        #     "sunrise_time": weather["sunrise"][3],
-        #     "sunset_time": weather["sunset"][3],
-        # }
-        # return forecast
-    
+        # Parse weather data    
+
         forecast = {}
+
+        # By default days = 0, and in this case it should return the data of 3 days from now
+        i = 0
+        j = i
+        if days == 0: 
+            j = i + 3
+        
+        days = days + 1
     
-        for i in range(4):
-            date = weather["time"][i]
+        for i in range(days):
+            date = weather["time"][j]
             # Construct weather information for the day
             day_forecast = {
                 "city": city,
-                "date": weather["time"][i],
+                "date": weather["time"][j],
                 "timezone": timezone,
-                "description": get_weather_description(weather["weather_code"][i]),
-                "max_temperature": weather["temperature_2m_max"][i],
-                "min_temperature": weather["temperature_2m_min"][i],
-                "apparent_max_temperature": weather["apparent_temperature_max"][i],
-                "apparent_min_temperature": weather["apparent_temperature_min"][i],
-                "sunrise_time": weather["sunrise"][i],
-                "sunset_time": weather["sunset"][i],
+                "description": get_weather_description(weather["weather_code"][j]),
+                "max_temperature": weather["temperature_2m_max"][j],
+                "min_temperature": weather["temperature_2m_min"][j],
+                "apparent_max_temperature": weather["apparent_temperature_max"][j],
+                "apparent_min_temperature": weather["apparent_temperature_min"][j],
+                "sunrise_time": weather["sunrise"][j],
+                "sunset_time": weather["sunset"][j],
             }
-
             # Add day's forecast to the overall forecast dictionary
             forecast[date] = day_forecast
+            # This is needed because j determines which value is printed and i is the counter
+            j = i 
         
         return forecast
     except requests.RequestException as e:
@@ -105,9 +104,12 @@ def get_temperature_forecast(city, latitude, longitude, timezone):
     except ValueError as e:
         print(f"Environment variable error: {e}")
         return None
+    except IndexError as e:
+        print(f"Parameter error: {e}")
+        return None
 
 
-def get_rain_forecast(city, latitude, longitude, timezone):
+def get_rain_forecast(city, latitude, longitude, timezone, days):
     """
     Fetches rain forecast data from an API for the specified city.
     
@@ -116,14 +118,17 @@ def get_rain_forecast(city, latitude, longitude, timezone):
         latitude (float): Latitude of the location.
         longitude (float): Longitude of the location.
         timezone (string): STD code of timezone.
+        days (int): Number of days consulted.
     
     Returns:
-        dict: Forecast data for the next 3 days.
+        dict: Forecast data for the requested days.
     """
     try:
         # Fetch weather data from API
         if not WEATHER_API_URL:
             raise ValueError("WEATHER_API_URL environment variable is not set")
+        if days > 7:
+            raise IndexError("Days cannot be greater than 7.")
 
         url = f"{WEATHER_API_URL}?latitude={latitude}&longitude={longitude}&timezone={timezone}&{RAIN_PARAMS}"
         
@@ -135,31 +140,19 @@ def get_rain_forecast(city, latitude, longitude, timezone):
         # The json returns data for the next 7 days. We want the data of 3 days from now.
         weather = data["daily"]
 
-        # weather_code = weather["weather_code"][3]
-
-        # if weather_code < 50 and weather_code not in [71, 73, 75, 77]:
-        #     description = "No Rain - " + get_weather_description(weather_code)
-        # else:
-        #     description = get_weather_description(weather_code)
-
-        # # Parse weather data
-        # forecast = {
-        #     "city": city,
-        #     "date": weather["time"][3],
-        #     "timezone": timezone,
-        #     "description": description,
-        #     "rain_sum_mm": weather["rain_sum"][3],
-        #     "showers_sum_mm": weather["showers_sum"][3],
-        #     "precipitation_probability_percentage": weather["precipitation_probability_max"][3],
-        #     "wind_speed_max_kmh": weather["wind_speed_10m_max"][3]
-        # }
-        # return forecast
-
         forecast = {}
+
+        # By default days = 0, and in this case it should return the data of 3 days from now
+        i = 0
+        j = i
+        if days == 0: 
+            j = i + 3
+        
+        days = days + 1
     
-        for i in range(4):
-            date = weather["time"][i]
-            weather_code = weather["weather_code"][i]
+        for i in range(days):
+            date = weather["time"][j]
+            weather_code = weather["weather_code"][j]
 
             # Append "No Rain -" if weather code is not related to rain
             if weather_code < 50 and weather_code not in [71, 73, 75, 77]:
@@ -173,12 +166,12 @@ def get_rain_forecast(city, latitude, longitude, timezone):
                 "date": date,
                 "timezone": timezone,
                 "description": description,
-                "rain_sum_mm": weather["rain_sum"][i],
-                "showers_sum_mm": weather["showers_sum"][i],
-                "precipitation_probability_percentage": weather["precipitation_probability_max"][i],
-                "wind_speed_max_kmh": weather["wind_speed_10m_max"][i]
+                "rain_sum_mm": weather["rain_sum"][j],
+                "showers_sum_mm": weather["showers_sum"][j],
+                "precipitation_probability_percentage": weather["precipitation_probability_max"][j],
+                "wind_speed_max_kmh": weather["wind_speed_10m_max"][j]
             }
-
+            j = i 
             # Add day's forecast to the overall forecast dictionary
             forecast[date] = day_forecast
         
@@ -192,4 +185,7 @@ def get_rain_forecast(city, latitude, longitude, timezone):
         return None
     except ValueError as e:
         print(f"Environment variable error: {e}")
+        return None
+    except IndexError as e:
+        print(f"Parameter error: {e}")
         return None

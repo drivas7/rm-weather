@@ -45,7 +45,7 @@ Ensure the application is unit tested correctly and is overall built to be highl
 
 ## 🏁 Getting Started <a name = "getting_started"></a>
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See [deployment](#deployment) for notes on how to deploy the project on a live system.
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. 
 
 
 ### Installing
@@ -95,9 +95,11 @@ pytest
 The usage of the system is pretty simple. The weather app has two different endpoints:
 
 - `/temperature`: This endpoint retrieves the temperature forecast for a specified city. It returns the forecast for the next 3 days, including the maximum and minimum temperatures, apparent temperatures, sunrise and sunset times, and a description of the weather conditions.
-  - It can optionally receive the `?city=` parameter in the URL. In this case, the city needs to be in the list configured in the `cities.json`. The default value is Lisbon.
+  - It can optionally receive the `?city=` parameter in the URL. In this case, the city needs to be in the list configured in the `cities.json`. The default value is Lisbon. 
+  - It can optionally receive the `?days=` parameter in the URL. It cannot be greater than 7, and the default value is 0, which returns the weather of 3 days from now.
 - `/rain`: This endpoint checks if it will rain in a specified city in the next 3 days. It returns information about rainfall, including the sum of rain and showers, precipitation probability, and maximum wind speed.
   - It can optionally receive the `?city=` parameter in the URL. In this case, the city needs to be in the list configured in the `cities.json`. The default value is Lisbon.
+  - It can optionally receive the `?days=` parameter in the URL. It cannot be greater than 7, and the default value is 0, which returns the weather of 3 days from now.
 
 
 ## 🚀 Running the App <a name = "running"></a>
@@ -108,3 +110,10 @@ Running the app only requires executing the following command from the root of t
 python main.py
 ```
 
+Alternatively, it can run using the Dockerfile:
+
+```bash
+docker build -t rm-weather --build-arg WEATHER_API_URL=$WEATHER_API_URL --build-arg TEMPERATURE_PARAMS=$TEMPERATURE_PARAMS --build-arg RAIN_PARAMS=$RAIN_PARAMS .
+
+docker run -p 8000:8000 rm-weather
+```

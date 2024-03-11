@@ -44,10 +44,10 @@ def test_get_rain_forecast():
     assert "date" in forecast_data
     assert "timezone" in forecast_data
     assert "description" in forecast_data
-    assert "rain_sum_mm" in forecast_data
-    assert "showers_sum_mm" in forecast_data
-    assert "precipitation_probability_percentage" in forecast_data
-    assert "wind_speed_max_kmh" in forecast_data
+    assert "rain_sum" in forecast_data
+    assert "showers_sum" in forecast_data
+    assert "precipitation_probability" in forecast_data
+    assert "wind_speed_max" in forecast_data
 
 # Test performance
 @pytest.mark.benchmark(group="performance")

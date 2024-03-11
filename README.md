@@ -67,11 +67,14 @@ pip install -r requirements.txt
 | `WEATHER_API_URL`  | URL of the weather API. Ensure that this environment variable is set to the appropriate URL. |
 | `TEMPERATURE_PARAMS`  | List of parameters passed to the URL of the weather API when querying the temperature endpoint. |
 | `RAIN_PARAMS`  | List of parameters passed to the URL of the weather API when querying the rain endpoint. |
+| `GEOLOCATION_API_URL`  | URL of the geolocation API. Ensure that this environment variable is set to the appropriate URL. |
+
 
 ```bash
 export WEATHER_API_URL = {value} 
 export TEMPERATURE_PARAMS = {value}
 export RAIN_PARAMS = {value}
+export GEOLOCATION_API_URL = {value}
 ```
 
 ## 🔧 Running the Tests <a name = "tests"></a>
@@ -95,11 +98,11 @@ pytest
 The usage of the system is pretty simple. The weather app has two different endpoints:
 
 - `/temperature`: This endpoint retrieves the temperature forecast for a specified city. It returns the forecast for the next 3 days, including the maximum and minimum temperatures, apparent temperatures, sunrise and sunset times, and a description of the weather conditions.
-  - It can optionally receive the `?city=` parameter in the URL. In this case, the city needs to be in the list configured in the `cities.json`. The default value is Lisbon. 
-  - It can optionally receive the `?days=` parameter in the URL. It cannot be greater than 7, and the default value is 0, which returns the weather of 3 days from now.
+  - It can optionally receive the `?city=` parameter in the URL. In this case, the city's name needs to be in English. The default value is Lisbon. 
+  - It can optionally receive the `?days=` parameter in the URL. It cannot be greater than 16, and the default value is 0, which returns the weather of 3 days from now.
 - `/rain`: This endpoint checks if it will rain in a specified city in the next 3 days. It returns information about rainfall, including the sum of rain and showers, precipitation probability, and maximum wind speed.
-  - It can optionally receive the `?city=` parameter in the URL. In this case, the city needs to be in the list configured in the `cities.json`. The default value is Lisbon.
-  - It can optionally receive the `?days=` parameter in the URL. It cannot be greater than 7, and the default value is 0, which returns the weather of 3 days from now.
+  - It can optionally receive the `?city=` parameter in the URL. In this case, the city's name needs to be in English. The default value is Lisbon.
+  - It can optionally receive the `?days=` parameter in the URL. It cannot be greater than 16, and the default value is 0, which returns the weather of 3 days from now.
 
 
 ## 🚀 Running the App <a name = "running"></a>
@@ -113,7 +116,7 @@ python main.py
 Alternatively, it can run using the Dockerfile:
 
 ```bash
-docker build -t rm-weather --build-arg WEATHER_API_URL=$WEATHER_API_URL --build-arg TEMPERATURE_PARAMS=$TEMPERATURE_PARAMS --build-arg RAIN_PARAMS=$RAIN_PARAMS .
+docker build -t rm-weather --build-arg WEATHER_API_URL=$WEATHER_API_URL --build-arg TEMPERATURE_PARAMS=$TEMPERATURE_PARAMS --build-arg RAIN_PARAMS=$RAIN_PARAMS --build-arg RAIN_PARAMS=$RAIN_PARAMS .
 
 docker run -p 8000:8000 rm-weather
 ```

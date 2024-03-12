@@ -116,7 +116,7 @@ python main.py
 Alternatively, it can run using the Dockerfile:
 
 ```bash
-docker build -t rm-weather --build-arg WEATHER_API_URL=$WEATHER_API_URL --build-arg TEMPERATURE_PARAMS=$TEMPERATURE_PARAMS --build-arg RAIN_PARAMS=$RAIN_PARAMS --build-arg RAIN_PARAMS=$RAIN_PARAMS .
+docker build -t rm-weather --build-arg WEATHER_API_URL=$WEATHER_API_URL --build-arg TEMPERATURE_PARAMS=$TEMPERATURE_PARAMS --build-arg RAIN_PARAMS=$RAIN_PARAMS --build-arg GEOLOCATION_API_URL=$GEOLOCATION_API_URL .
 
 docker run -p 8000:8000 rm-weather
 ```

@@ -24,6 +24,7 @@
 - [Running the Tests](#tests)
 - [Endpoints](#endpoints)
 - [Running the App](#running)
+- [Deploying the App](#deploying)
 
 
 ## 🧐 About <a name = "about"></a>
@@ -120,3 +121,39 @@ docker build -t rm-weather --build-arg WEATHER_API_URL=$WEATHER_API_URL --build-
 
 docker run -p 8000:8000 rm-weather
 ```
+
+## 🚀🚀 Deploying the App (CI/CD Overview) <a name = "deploying"></a>
+
+
+This CI/CD pipeline automates the testing and deployment process for the project on GitHub. It consists of two main jobs: `build` and `deploy`.
+
+### Build Job
+
+- **Trigger**: This job is triggered on every push to the `main` branch.
+- **Environment**: It runs on an Ubuntu environment (`ubuntu-latest`).
+- **Steps**:
+  - Checks out the code repository using `actions/checkout`.
+  - Sets up a Python environment with the specified version using `actions/setup-python`.
+  - Installs project dependencies defined in `requirements.txt`.
+  - Runs tests using pytest to ensure code quality and functionality.
+
+### Deploy Job
+
+- **Trigger**: This job runs after the `build` job and depends on its successful completion (`needs: build`).
+- **Environment**: It also runs on an Ubuntu environment.
+- **Steps**:
+  - Copies project files to an AWS EC2 instance for deployment using the `appleboy/scp-action` GitHub Action.
+  - Passes environment variables (`WEATHER_API_URL`, `TEMPERATURE_PARAMS`, and `RAIN_PARAMS`, `GEOLOCATION_API_URL`) required for the application to the Docker container during deployment using GitHub Secrets.
+  - The Docker container runs the FastAPI application using uvicorn, exposing it on port 8000.
+
+### Tests (pytest)
+
+- Pytest is used to automate the testing process in the `build` job.
+- It verifies code quality and functionality by executing unit tests defined in the project.
+- Test results are crucial for ensuring that the application behaves as expected and meets the specified requirements.
+
+
+### GitHub Secrets
+
+- GitHub Secrets are used to securely store sensitive information such as API keys, passwords, and tokens.
+- Environment variables required for the application (`WEATHER_API_URL`, `TEMPERATURE_PARAMS`, `GEOLOCATION_API_URL` and `RAIN_PARAMS`) are stored as GitHub Secrets and accessed in the workflow YAML file using `${{ secrets.SECRET_NAME }}` syntax.
